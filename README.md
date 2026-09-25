@@ -60,6 +60,19 @@ screenshots. That reads as professional discretion and keeps you on the right si
 of the agreement. If a client later agrees to be named, swap the tag for their
 name and add a real screen.
 
+## Images
+
+| File | Used for |
+| --- | --- |
+| `dharamveer-web.webp` / `.png` | hero portrait. Cut-out, trimmed to the subject and resized to 1200px tall: 93 KB WebP with a 122 KB PNG fallback, served through a `<picture>`. |
+| `dharamveer.png` | the original 1 MB upload. Nothing references it — keep it as your master copy or delete it from the repo. |
+| `work-hotel.png` | hotel project thumbnail. The CSS scales it to 400% and pins it to the bottom of the tile, so the top 66% of the screenshot — site header, logo, and the line naming the client — is cropped out of frame. Only the buttons and the venue are visible. |
+| `work-village.svg` | Village in India tile. Replace with a real screenshot any time; just change the `src`. |
+| `case study.pdf` | 24 MB, nothing links to it. Move it out before pushing unless you want it in the repo. |
+
+To re-crop the hotel thumbnail, change the `width` on `.work__shot` in `css/style.css`:
+a bigger percentage crops more off the top.
+
 ## Placeholders to replace
 
 | Where | What |
@@ -68,7 +81,7 @@ name and add a real screen.
 | `js/main.js`, end of the form handler | the same `hello@example.com` in the `mailto:` |
 | Hero | "the last three years" — update as this changes |
 | Photo caption | "India · working remotely" — add your city if you want local clients |
-| `.photo__slot` in `index.html` | swap the `DT` block for `<img src="assets/you.jpg" alt="Dharamveer Singh Tanwar" />` |
+
 | `assets/work-village.svg` | optional: drop your own screenshot in as `assets/work-village.png` and change the `src` on the Village in India card |
 
 A real photo matters more than anything else on this page. A plain, well-lit
@@ -86,9 +99,31 @@ detail stops believing the rest of the page.
 
 ## Contact form
 
-No backend, so submitting opens the visitor's mail client with the message
-pre-filled. For real submissions, point the form at Formspree / Web3Forms or your
-own endpoint and replace the `mailto:` block in `js/main.js` with a `fetch()` POST.
+`js/main.js` has two constants at the top:
+
+```js
+const FORM_ENDPOINT = "";                              // empty = mail-app fallback
+const CONTACT_EMAIL = "dharamveer22062004@gmail.com";  // where enquiries should land
+```
+
+**With `FORM_ENDPOINT` empty** (current state) the form opens the visitor's own mail
+app with the message pre-filled. It works, but the visitor still has to press send,
+it does nothing visible for people without a mail client configured, and you get no
+record of anyone who gave up halfway.
+
+**With `FORM_ENDPOINT` set**, the form POSTs there instead: the visitor sees an
+inline "thanks", the form clears itself, and the enquiry is recorded by that service.
+If the request fails, the visitor is told to email `CONTACT_EMAIL` directly rather
+than losing what they typed.
+
+To turn it on, sign up at formspree.io, create a form, and paste the endpoint
+(`https://formspree.io/f/xxxxxxx`) into `FORM_ENDPOINT`. That URL is not a secret —
+it is designed to sit in public HTML. Every enquiry then shows up in the Formspree
+dashboard and in your email. Web3Forms, Getform, Basin and FormSubmit all work the
+same way; Web3Forms also needs a hidden `access_key` input inside the `<form>`.
+
+Free tiers are capped (Formspree 50 submissions/month, Web3Forms 250). Watch the cap
+if the site starts getting traffic.
 
 ## Design system
 

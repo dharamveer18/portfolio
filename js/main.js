@@ -4,6 +4,14 @@
 (function () {
   "use strict";
 
+  /* Where enquiries go.
+     FORM_ENDPOINT empty  -> the form falls back to opening the visitor's mail app.
+     FORM_ENDPOINT set    -> the form POSTs there and you get a record in that
+     service's dashboard / inbox. Paste a Formspree URL (https://formspree.io/f/xxxxxxx)
+     or any endpoint that accepts a POSTed form. Nothing else needs changing. */
+  const FORM_ENDPOINT = "";
+  const CONTACT_EMAIL = "dharamveer22062004@gmail.com";
+
   const $  = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -183,27 +191,53 @@
         return;
       }
 
-      // There's no server behind this page, so the message goes to the visitor's
-      // own mail client. Replace this with a fetch() POST once you have an endpoint.
       const data = new FormData(form);
-      const subject = `Project enquiry — ${data.get("service")}`;
+      const subject = `Project enquiry \u2014 ${data.get("service")}`;
       const body =
         `Name: ${data.get("name")}\n` +
         `Email: ${data.get("email")}\n` +
         `Need: ${data.get("service")}\n\n` +
         `${data.get("message")}\n`;
 
-      sendBtn.disabled = true;
-      $(".btn__label", sendBtn).textContent = "Opening your mail app";
+      const label = $(".btn__label", sendBtn);
 
-      window.location.href =
-        `mailto:hello@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-      setTimeout(() => {
+      const done = (text, failed) => {
         sendBtn.disabled = false;
-        $(".btn__label", sendBtn).textContent = "Send it";
-        statusEl.textContent = "Your draft is ready in your mail app. Send it and I’ll reply within a day.";
-      }, 900);
+        label.textContent = "Send it";
+        statusEl.textContent = text;
+        statusEl.classList.toggle("is-error", Boolean(failed));
+      };
+
+      sendBtn.disabled = true;
+      label.textContent = "Sending";
+
+      if (!FORM_ENDPOINT) {
+        // No form service configured yet, so hand the message to the visitor's
+        // own mail app. They still have to press send, so this is a fallback.
+        window.location.href =
+          `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        setTimeout(() => {
+          done("Your draft is ready in your mail app \u2014 press send there and I\u2019ll reply within a day.");
+        }, 900);
+        return;
+      }
+
+      fetch(FORM_ENDPOINT, {
+        method: "POST",
+        body: data,
+        headers: { Accept: "application/json" },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Bad response " + res.status);
+          form.reset();
+          done("Thanks \u2014 that\u2019s with me. I\u2019ll reply within a working day.");
+        })
+        .catch(() => {
+          done(
+            "That didn\u2019t send. Email me directly at " + CONTACT_EMAIL + " and I\u2019ll pick it up.",
+            true
+          );
+        });
     });
   }
 

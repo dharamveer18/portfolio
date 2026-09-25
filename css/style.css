@@ -317,12 +317,16 @@ h1, h2, h3 {
   box-shadow: var(--shadow);
   overflow: hidden;
 }
-.photo__slot > span[aria-hidden] {
-  font-family: var(--font-display); font-size: clamp(48px, 7vw, 76px); font-weight: 700;
-  letter-spacing: -.04em;
-  color: color-mix(in srgb, var(--text) 16%, transparent);
+/* cut-out portrait: stands on the bottom edge of the frame, gradient behind */
+.photo__slot picture { display: contents; }
+.photo__slot img {
+  position: absolute; left: 50%; bottom: 0;
+  height: 93%; width: auto; max-width: none;
+  transform: translateX(-50%);
+  object-fit: contain;
+  filter: drop-shadow(0 18px 34px rgba(0,0,0,.45));
 }
-.photo img { width: 100%; height: 100%; object-fit: cover; }
+[data-theme="light"] .photo__slot img { filter: drop-shadow(0 18px 30px rgba(28,20,14,.28)); }
 .photo figcaption {
   display: flex; flex-direction: column;
   margin-top: var(--s-4); padding-left: var(--s-1);
@@ -347,8 +351,8 @@ h1, h2, h3 {
   background: var(--accent-wash); color: var(--accent-2);
 }
 .chip__icon svg { width: 16px; height: 16px; }
-.chip--one { left: -14%; bottom: 18%; transform: rotate(-2.5deg); animation: bob 7s ease-in-out infinite; }
-.chip--two { right: -10%; top: 8%; transform: rotate(2deg); animation: bob 8.5s ease-in-out 1s infinite reverse; }
+.chip--one { left: -16%; bottom: 12%; transform: rotate(-2.5deg); animation: bob 7s ease-in-out infinite; }
+.chip--two { right: -28%; top: -4%; transform: rotate(2deg); animation: bob 8.5s ease-in-out 1s infinite reverse; }
 
 /* ---------- 7. Sections ---------- */
 .section { padding: var(--s-9) 0; }
@@ -432,7 +436,7 @@ h1, h2, h3 {
    source (site header, logo, client name) is cropped out of frame */
 .work__shot {
   position: absolute; left: 50%; bottom: 0;
-  width: 250%; height: auto; max-width: none;
+  width: 400%; height: auto; max-width: none;
   transform: translateX(-50%);
   z-index: 1;
 }
@@ -752,7 +756,8 @@ h1, h2, h3 {
   .hero { padding-top: calc(var(--nav-h) + var(--s-7)); }
   .hero__cta .btn { width: 100%; }
   .hero__visual { max-width: 300px; }
-  .chip--one { left: -6%; bottom: 20%; } .chip--two { right: -8%; }
+  /* on a phone the frame is narrow enough that the chips land on the face */
+  .chip { display: none; }
   .facts { flex-direction: column; gap: var(--s-4); }
   .form { padding: var(--s-5); }
   .footer__inner { flex-direction: column; align-items: flex-start; gap: var(--s-5); }
