@@ -45,11 +45,13 @@
   }
 
   /* ---- Menu on small screens ---- */
+  const nav = $("#nav");
   const links = $("#navLinks");
   const navBtn = $("#navToggle");
 
   function shut() {
     links.classList.remove("is-open");
+    nav.classList.remove("menu-open");
     navBtn.setAttribute("aria-expanded", "false");
     navBtn.setAttribute("aria-label", "Open menu");
   }
@@ -57,6 +59,7 @@
   if (links && navBtn) {
     navBtn.addEventListener("click", () => {
       const open = links.classList.toggle("is-open");
+      nav.classList.toggle("menu-open", open);
       navBtn.setAttribute("aria-expanded", String(open));
       navBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     });
@@ -67,7 +70,6 @@
   }
 
   /* ---- Nav background + reading progress ---- */
-  const nav = $("#nav");
   const bar = $("#progressBar");
   let ticking = false;
 
